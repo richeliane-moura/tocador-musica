@@ -28,5 +28,4 @@ Um tocador de música simples feito em HTML, CSS e JavaScript, com funcionalidad
 ## 🚀 Visualização
 ( https://richeliane-moura.github.io/tocador-musica/)
 
- (https://richeliane-moura.github.io/tocador-musica/)
 
