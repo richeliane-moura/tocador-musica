@@ -1,0 +1,99 @@
+/* Fundo da página */
+body {
+    background: linear-gradient(rgb(59, 88, 93), rgb(29, 40, 42));
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial, sans-serif;
+    color: white;
+}
+
+/* Container principal */
+.music-container {
+    background: rgba(255, 255, 255, 0.08);
+    padding: 20px;
+    border-radius: 20px;
+    width: 320px;
+    text-align: center;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+}
+
+/* Capa da música */
+#cover {
+    width: 100%;
+    max-width: 250px;
+    border-radius: 15px;
+    margin-bottom: 15px;
+}
+
+/* Informações da música */
+#song-info {
+    margin-bottom: 10px;
+}
+
+#song-name {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+#band-name {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+/* Botões */
+.button {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 1.5rem;
+    margin: 0 8px;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.button:hover {
+    transform: scale(1.1);
+    color: #00c9ff;
+}
+
+.button-biggest {
+    font-size: 2.5rem;
+}
+
+.button-active {
+    color: #00ff88 !important;
+}
+
+/* Barra de progresso */
+#progress-container {
+    margin: 15px 0;
+}
+
+#progress-bar {
+    background-color: rgb(139, 153, 156); /* barra de fundo cinza */
+    height: 5px;
+    width: 100%;
+    border-radius: 15px;
+    position: relative; /* necessário para barra interna */
+}
+
+#current-progress {
+    background-color: #1db954; /* barra verde que cresce */
+    height: 100%;
+    width: var(--progress); /* atualiza via JS */
+    border-radius: inherit;
+    transition: width 0.1s linear; /* anima suavemente o crescimento */
+}
+
+
+/* Tempos da música */
+#time-box {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    margin-top: 5px;
+    opacity: 0.8;
+}
