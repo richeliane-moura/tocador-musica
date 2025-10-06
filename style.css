@@ -1,4 +1,4 @@
-/* Fundo da página */
+/* ---------- Fundo da página ---------- */
 body {
     background: linear-gradient(rgb(59, 88, 93), rgb(29, 40, 42));
     height: 100vh;
@@ -10,7 +10,7 @@ body {
     color: white;
 }
 
-/* Container principal */
+/* ---------- Container principal ---------- */
 .music-container {
     background: rgba(255, 255, 255, 0.08);
     padding: 20px;
@@ -20,15 +20,20 @@ body {
     box-shadow: 0 5px 20px rgba(0,0,0,0.5);
 }
 
-/* Capa da música */
+/* ---------- Capa da música ---------- */
 #cover {
     width: 100%;
     max-width: 250px;
     border-radius: 15px;
     margin-bottom: 15px;
+    transition: transform 0.3s ease;
 }
 
-/* Informações da música */
+#cover.playing {
+    transform: scale(1.05);
+}
+
+/* ---------- Informações da música ---------- */
 #song-info {
     margin-bottom: 10px;
 }
@@ -43,7 +48,7 @@ body {
     opacity: 0.8;
 }
 
-/* Botões */
+/* ---------- Botões ---------- */
 .button {
     background: none;
     border: none;
@@ -55,8 +60,8 @@ body {
 }
 
 .button:hover {
-    transform: scale(1.1);
-    color: #00c9ff;
+    transform: scale(1.2);
+    color: #1db954;
 }
 
 .button-biggest {
@@ -64,10 +69,10 @@ body {
 }
 
 .button-active {
-    color: #00ff88 !important;
+    color: #1db954 !important;
 }
 
-/* Barra de progresso */
+/* ---------- Barra de progresso ---------- */
 #progress-container {
     margin: 15px 0;
 }
@@ -77,23 +82,23 @@ body {
     height: 5px;
     width: 100%;
     border-radius: 15px;
-    position: relative; /* necessário para barra interna */
+    position: relative;
 }
 
 #current-progress {
-    background-color: #1db954; /* barra verde que cresce */
+    width: var(--progress); /* Conecta ao JS */
     height: 100%;
-    width: var(--progress); /* atualiza via JS */
+    background-color: #1db954; /* barra verde que cresce */
     border-radius: inherit;
-    transition: width 0.1s linear; /* anima suavemente o crescimento */
+    transition: width 0.25s linear;
+    --progress: 0%; /* inicializa zerada */
 }
 
-
-/* Tempos da música */
+/* ---------- Tempos da música ---------- */
 #time-box {
     display: flex;
     justify-content: space-between;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     margin-top: 5px;
-    opacity: 0.8;
+    color: rgba(255, 255, 255, 0.7);
 }

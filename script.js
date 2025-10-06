@@ -1,3 +1,4 @@
+// ---------- Seletores ----------
 const songName = document.getElementById('song-name');
 const bandName = document.getElementById('band-name');
 const song = document.getElementById('audio');
@@ -13,81 +14,69 @@ const repeatButton = document.getElementById('repeat');
 const songTime = document.getElementById('song-time');
 const totalTime = document.getElementById('total-time');
 
-// Playlist
-const digno = {
-    songName: 'Digno',
-    artist: 'Eyshila',
-    audio: 'digno.mp3',
-    cover: 'foto1.jpg',
-    liked: false,
-};
+// ---------- Playlist ----------
+const digno = { songName: 'Digno', artist: 'Eyshila', audio: 'digno.mp3', cover: 'foto1.jpg', liked: false };
+const praSempreTeu = { songName: 'Pra Sempre Teu', artist: 'André Valadão', audio: 'pra-sempre-teu.mp3', cover: 'foto2.jpg', liked: false };
+const deusDeus = { songName: 'Deus é Deus', artist: 'Delino Marçal', audio: 'deus-e-deus.mp3', cover: 'foto3.jpeg', liked: true };
 
-const praSempreTeu = {
-    songName: 'Pra Sempre Teu',
-    artist: 'André Valadão',
-    audio: 'pra-sempre-teu.mp3',
-    cover: 'foto2.jpg',
-    liked: false,
-};
-
-const deusDeus = {
-    songName: 'Deus é Deus',
-    artist: 'Delino Marçal',
-    audio: 'deus-e-deus.mp3',
-    cover: 'foto3.jpeg',
-    liked: true,
-};
-
-
+let originalPlaylist = [digno, praSempreTeu, deusDeus];
+let sortedPlaylist = [...originalPlaylist];
+let index = 0;
 let isPlaying = false;
 let isShuffled = false;
 let repeatOn = false;
-const originalplaylist = [digno, praSempreTeu, deusDeus];
-let sortedPlaylist = [...originalplaylist];
-let index = 0;
+
+// ---------- Carregar likes do LocalStorage ----------
+const savedPlaylist = JSON.parse(localStorage.getItem('playlist'));
+if(savedPlaylist){
+    for(let i = 0; i < originalPlaylist.length; i++){
+        originalPlaylist[i].liked = savedPlaylist[i]?.liked ?? false;
+    }
+}
 
 // ---------- Funções principais ----------
-
 function playSong(){
-    play.querySelector('.bi').classList.remove('bi-play-circle-fill');
-    play.querySelector('.bi').classList.add('bi-pause-circle-fill');
+    play.querySelector('.bi').classList.replace('bi-play-circle-fill','bi-pause-circle-fill');
     song.play();
-    cover.classList.add('playing'); // animação opcional
+    cover.classList.add('playing');
     isPlaying = true;
 }
 
 function pauseSong(){
-    play.querySelector('.bi').classList.remove('bi-pause-circle-fill');
-    play.querySelector('.bi').classList.add('bi-play-circle-fill');
+    play.querySelector('.bi').classList.replace('bi-pause-circle-fill','bi-play-circle-fill');
     song.pause();
     cover.classList.remove('playing');
     isPlaying = false;
 }
 
-function playPauseDecider(){
-    isPlaying ? pauseSong() : playSong();
-}
+function playPauseDecider(){ isPlaying ? pauseSong() : playSong(); }
 
 function likeButtonRender(){
+    const icon = likeButton.querySelector('.bi');
     if(sortedPlaylist[index].liked){
-        likeButton.querySelector('.bi').classList.remove('bi-heart');
-        likeButton.querySelector('.bi').classList.add('bi-heart-fill');
+        icon.classList.replace('bi-heart','bi-heart-fill');
         likeButton.classList.add('button-active');
     } else {
-        likeButton.querySelector('.bi').classList.add('bi-heart');
-        likeButton.querySelector('.bi').classList.remove('bi-heart-fill');
+        icon.classList.replace('bi-heart-fill','bi-heart');
         likeButton.classList.remove('button-active');
     }
 }
 
 function initializeSong(){
-    cover.src = `imagem/${sortedPlaylist[index].cover}`;
-    song.src = `musica/${sortedPlaylist[index].audio}`;
-    songName.innerText = sortedPlaylist[index].songName;
-    bandName.innerText = sortedPlaylist[index].artist;
-    likeButtonRender();    
+    const currentSong = sortedPlaylist[index];
+    cover.src = `imagem/${currentSong.cover}`;
+    song.src = `musica/${currentSong.audio}`;
+    songName.innerText = currentSong.songName;
+    bandName.innerText = currentSong.artist;
+    likeButtonRender();
+
+    // Barra e tempos zerados
+    currentProgress.style.setProperty('--progress', `0%`);
+    songTime.innerText = '00:00';
+    totalTime.innerText = '00:00';
 }
 
+// ---------- Próxima e anterior ----------
 function previousSong(){
     index = (index === 0) ? sortedPlaylist.length - 1 : index - 1;
     initializeSong();
@@ -100,7 +89,9 @@ function nextSong(){
     playSong();    
 }
 
+// ---------- Barra de progresso ----------
 function updateProgress(){
+    if(!song.duration) return;
     const barWidth = (song.currentTime / song.duration) * 100;
     currentProgress.style.setProperty('--progress', `${barWidth}%`);
     songTime.innerText = toMMSS(song.currentTime);
@@ -109,51 +100,44 @@ function updateProgress(){
 function jumpTo(event){
     const width = progressContainer.clientWidth;
     const clickPosition = event.offsetX;
-    const jumpToTime = (clickPosition / width) * song.duration;
-    song.currentTime = jumpToTime;
+    if(song.duration){
+        song.currentTime = (clickPosition / width) * song.duration;
+    }
 }
 
 // ---------- Shuffle e Repeat ----------
-
-function shuffleArray(preshuffleArray){
-    let currentIndex = preshuffleArray.length - 1;
-    while (currentIndex > 0) {
-        let randomIndex = Math.floor(Math.random() * (currentIndex + 1));
-        let aux = preshuffleArray[currentIndex];
-        preshuffleArray[currentIndex] = preshuffleArray[randomIndex];
-        preshuffleArray[randomIndex] = aux;
+function shuffleArray(arr){
+    let currentIndex = arr.length - 1;
+    while(currentIndex > 0){
+        const randomIndex = Math.floor(Math.random() * (currentIndex + 1));
+        [arr[currentIndex], arr[randomIndex]] = [arr[randomIndex], arr[currentIndex]];
         currentIndex--;
     }
 }
 
-function shuffleButtonClicked() {
-    if (!isShuffled) {
+function shuffleButtonClicked(){
+    const currentSong = sortedPlaylist[index];
+    if(!isShuffled){
         isShuffled = true;
-
-        // Cria uma cópia do original e embaralha
-        let newPlaylist = [...originalplaylist];
+        let newPlaylist = [...originalPlaylist];
         shuffleArray(newPlaylist);
 
-        // Mantém a música atual no início da lista para não pular a música atual
-        const currentSong = sortedPlaylist[index];
+        // Mantém música atual no início
         const currentIndexInNew = newPlaylist.findIndex(song => song.audio === currentSong.audio);
         [newPlaylist[0], newPlaylist[currentIndexInNew]] = [newPlaylist[currentIndexInNew], newPlaylist[0]];
 
         sortedPlaylist = newPlaylist;
-        index = 0; // reset para o início da nova lista embaralhada
-
+        index = 0;
         shuffleButton.classList.add('button-active');
     } else {
         isShuffled = false;
-        // mantém a música atual na lista original
-        const currentSong = sortedPlaylist[index];
-        sortedPlaylist = [...originalplaylist];
+        sortedPlaylist = [...originalPlaylist];
         index = sortedPlaylist.findIndex(song => song.audio === currentSong.audio);
-
         shuffleButton.classList.remove('button-active');
     }
+    initializeSong();
+    if(isPlaying) playSong();
 }
-
 
 function repeatButtonClicked(){
     repeatOn = !repeatOn;
@@ -170,29 +154,27 @@ function nextOrRepeat(){
 }
 
 // ---------- Tempo ----------
-
-function toMMSS(originalNumber){
-    let min = Math.floor(originalNumber / 60);
-    let secs = Math.floor(originalNumber % 60); 
-    return `${min.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+function toMMSS(num){
+    const min = Math.floor(num/60);
+    const sec = Math.floor(num%60);
+    return `${min.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}`;
 }
 
 function updateTotalTime(){
-    totalTime.innerText = toMMSS(song.duration);
+    if(song.duration) totalTime.innerText = toMMSS(song.duration);
 }
 
 // ---------- Curtir ----------
-
 function likeButtonClicked(){
     sortedPlaylist[index].liked = !sortedPlaylist[index].liked;
     likeButtonRender();
-    localStorage.setItem('playlist', JSON.stringify(originalplaylist));
+    localStorage.setItem('playlist', JSON.stringify(originalPlaylist));
 }
 
 // ---------- Inicialização ----------
-
 initializeSong();
 
+// ---------- Event Listeners ----------
 play.addEventListener('click', playPauseDecider);
 previous.addEventListener('click', previousSong);
 next.addEventListener('click', nextSong);
